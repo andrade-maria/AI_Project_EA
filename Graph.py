@@ -25,7 +25,7 @@ def show_graph(graph):
 
     print("\n\n\n")
 
-# BUILD THE GRAPH ACCORDING TO DICTIONAY
+# BUILD THE GRAPH ACCORDING TO DICTIONARY
 def build_graph():    
     graph = defaultdict(list)
 

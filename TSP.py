@@ -8,7 +8,7 @@ class TSP(Individual):
     def crossover(parent1, parent2, crossover_params, init_params):
         
         # generate random crossover single point
-        crossover_params['single_point'] = np.random.uniform(low = 1, high = 9)/10.0                                                    # for each individual it will be randomly generated a number between 0.1 and 0.9 to act as crossover single point
+        crossover_params['single_point'] = np.random.uniform(low = 1, high = 9)/10.0                                                    # for each individual a number will be randomly generated between 0.1 and 0.9 to act as crossover single point
         
         try: 
             parent1_head = copy.copy(parent1.value[:int(len(parent1.value) * crossover_params['single_point'])])                        # parent1_head is the first part of the parent1 
@@ -31,11 +31,11 @@ class TSP(Individual):
     # MUTATION FUNTCION
     def mutation(self, mutate_params):
         for _ in range(mutate_params['rate']):                                                                                  # mutate only one time per chromosome
-            i, j = np.random.choice(range(1, len(self.value)), 2, replace=False)                                                # can be the same position -> it won't mutate at all, range start at 1, because dist_center can't leave the first place
+            i, j = np.random.choice(range(1, len(self.value)), 2, replace=False)                                                # can be the same position -> it won't mutate at all, range starts at 1, because dist_center can't leave the first place
             self.value[i], self.value[j] = self.value[j], self.value[i]
 
-    # Generates a random array changing places of cities
+    # Generates a random array by changing places of cities
     def _random_init(self, cities_list, init_params):
         return np.random.choice(cities_list, size= init_params['n_cities']-1, replace=False)                                    # size is one smaller because dist_center is out                
         
-        # np.random.choice returns the list in random order, replace must be false, so it does not choose same city twice
+        # np.random.choice returns the list at random order, replace must be false, so it does not choose same city twice

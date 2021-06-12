@@ -1,4 +1,4 @@
-# STATES THAT BELONGS TO EACH REGION OF BRAZIL
+# STATES THAT BELONG TO EACH REGION OF BRAZIL
 dict_regions = {
     "North": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
     "Northeast":["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
@@ -10,7 +10,7 @@ dict_regions = {
 # TIME TO TRAVEL FROM A STATE TO ANOTHER
 dict_travel_time = {
 
-    # SP to others ditribution centers
+    # SP to other ditribution centers
     ("SP","AM"): 235,
     ("SP","CE"): 207,
     ("SP","MS"): 78,

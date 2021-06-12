@@ -2,18 +2,19 @@ from Dictionaries import *                                      # import diction
 from Graph import build_graph, show_graph, find_edge_weight     # import functions to create and show graph            
 from EA import Evolution                                        # to run evolutionary algorithm
 from TSP import TSP                                             # to create specific evolutionary parameters for TSP
-from Plotting import plot_hist, plot_graph, plot_show           # to plot with mathplotlib
+from Plotting import plot_hist, create_nx_graph                 # to plot with mathplotlib
 from itertools import permutations                              # to create permutations
 from math import inf                                            # use  INF 'number'
 
-# FIND THE FITNESS FOR EACH INDIVIUAL (FEASIBLE SOLUTION)
+
+# FIND THE FITNESS FOR EACH INDIVIDUAL (FEASIBLE SOLUTION)
 def fitness(tsp):
     res = 0
     for i in range(len(tsp.value)):
         state_a = tsp.value[i]                                                   # tsp.value is number of states
         state_b = tsp.value[i + 1]     if i+1 < len(tsp.value) else tsp.value[0]
         
-        res += find_edge_weight(state_a, state_b)                                 # Fitness of each individual is calculates based on the sum of all nodes connected in this specific path
+        res += find_edge_weight(state_a, state_b)                                 # Fitness of each individual is calculated based on the sum of all nodes connected in this specific path
 
     return res
 
@@ -30,10 +31,12 @@ def fitness(tsp):
 
 # CREATE GRAPH FOR BRAZIL
 graph = build_graph()                                                           # to change the graph, one must change info in Dictionaries.py
+create_nx_graph(graph, True, "Brazil")
 
 
 # CALCULATE BEST PATH FOR EACH REGION
 fitness_of_regions = {}
+regions_graphs = {}
 legend = []
 for region in dict_regions:
     print("Processing Region",region)
@@ -45,6 +48,9 @@ for region in dict_regions:
     for state in dict_regions[region]:
         region_graph[state] = graph[state]                                      # save only the edges from states inside that region
         count_states += 1
+
+    # saving each graph of each region
+    regions_graphs[region]=(region_graph)
 
 
     # SET VARIABLES FOR EVOLUTION CLASS
@@ -78,7 +84,7 @@ for region in dict_regions:
         evo.step()                                                              # step method call for reproduction, crossover, mutation and selection
     
     best_fitness = evo.pool.fitness(evo.pool.individuals[0])
-    fitness_of_regions[dist_center]= best_fitness                               # fitness_of_regions save best answer for each region
+    fitness_of_regions[dist_center]= best_fitness                               # fitness_of_regions saves best answer for each region
 
     print("Order: ", evo.pool.individuals[0].value)
     
@@ -87,8 +93,12 @@ for region in dict_regions:
     legend.append(region + " " + str(best_fitness) +" minutes")
 
 plt.legend(legend)
-plot_show(plt)
-    
+plt.show()
+
+# PLOTTING MAP OF EACH REGION
+for name, graph in regions_graphs.items():
+    create_nx_graph(graph, False, name)
+
     
 print("Best fitness of each region: ", fitness_of_regions)
 
@@ -111,7 +121,7 @@ for _, dist in distribution_center.items():
     if dist != "SP":
         region_time_to_travel.append((dist, dict_travel_time[("SP", dist)]))
 
-# CREATE FOUR EQUATIONS THAT REPRESENT THE TIME FOR THE VACCINE LEAVE FROM SP AND BE DISTRIBUTED TO EVERY STATE INSIDE EACH REGION
+# CREATE FOUR EQUATIONS THAT REPRESENT THE TIME TO THE VACCINE LEAVE FROM SP AND BE DISTRIBUTED TO EVERY STATE INSIDE EACH REGION
 equations = []
 best_answer = inf                                                                   # inf from math library
 constants = [(1,0,0,0),                                                             # constants for each equation
@@ -119,7 +129,7 @@ constants = [(1,0,0,0),                                                         
              (2,2,1,0), 
              (2,2,2,1)]
 
-all_orders_possibilities = permutations(region_time_to_travel)                      # try all 4! possibilities of order for SP to distribution to each region
+all_orders_possibilities = permutations(region_time_to_travel)                      # try all 4! possibilities of order of regions for SP to distribute to
 
 
 # FOR EACH ORDER OF DISTRIBUTION, FIND THE EQUATIONS FOR THAT ORDER AND GET THE BEST ANSWER FROM ALL POSSIBILITIES
@@ -131,10 +141,10 @@ for region_order in list(all_orders_possibilities):                             
                                                       constants[i][2]* region_order[2][1] + \
                                                       constants[i][3]* region_order[3][1]
 
-        equations.append(eq)                                                        # each permutation get 4 equations, one for each region
+        equations.append(eq)                                                        # each permutation gets 4 equations, one for each region
     
     equations.append(fitness_of_regions["SP"])                                      # append the time to distribute inside SP's region, since this is done with another airplane and it is already in SP
-    longest_trip = max(equations)                                                   # answer is one of the 5 equations, the value for the region with longest time because it's a parallel distribution                      
+    longest_trip = max(equations)                                                   # answer is one of the 5 equations, the value for the region with the longest time because it's a parallel distribution                      
     
     # save order that SP will make the distribution
     if longest_trip < best_answer:
